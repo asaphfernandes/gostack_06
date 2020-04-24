@@ -9,7 +9,7 @@ export default class V1011587604698385 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'category',
+        name: 'categories',
         columns: [
           {
             name: 'id',
@@ -37,7 +37,7 @@ export default class V1011587604698385 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
-        name: 'transaction',
+        name: 'transactions',
         columns: [
           {
             name: 'id',
@@ -55,7 +55,9 @@ export default class V1011587604698385 implements MigrationInterface {
           },
           {
             name: 'value',
-            type: 'decimal',
+            type: 'numeric',
+            precision: 9,
+            scale: 2,
           },
           {
             name: 'category_id',
@@ -76,12 +78,12 @@ export default class V1011587604698385 implements MigrationInterface {
     );
 
     await queryRunner.createForeignKey(
-      'transaction',
+      'transactions',
       new TableForeignKey({
-        name: 'fk_transaction_category_id',
+        name: 'fk_transactions_category_id',
         columnNames: ['category_id'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'category',
+        referencedTableName: 'categories',
         onDelete: 'RESTRICT',
       }),
     );
@@ -89,10 +91,10 @@ export default class V1011587604698385 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropForeignKey(
-      'transaction',
-      'fk_transaction_category_id',
+      'transactions',
+      'fk_transactions_category_id',
     );
-    await queryRunner.dropTable('transaction');
-    await queryRunner.dropTable('category');
+    await queryRunner.dropTable('transactions');
+    await queryRunner.dropTable('categories');
   }
 }
