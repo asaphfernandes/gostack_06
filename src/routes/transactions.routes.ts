@@ -1,5 +1,7 @@
-import { Router } from 'express';
+import { Router, json } from 'express';
 import { getCustomRepository, getRepository } from 'typeorm';
+import multer from 'multer';
+import fs from 'fs';
 
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import CreateTransactionService from '../services/CreateTransactionService';
@@ -41,9 +43,12 @@ transactionsRouter.delete('/:id', async (request, response) => {
   return response.status(204).send();
 });
 
-transactionsRouter.post('/import', async (request, response) => {
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
+
+transactionsRouter.post('/import', upload.single('file'), async (request, response) => {
   const service = new ImportTransactionsService();
-  const transactions = service.execute();
+  const transactions = await service.execute(request.file.buffer);
   return response.status(200).json(transactions);
 });
 

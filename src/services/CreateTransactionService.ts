@@ -5,6 +5,7 @@ import AppError from '../errors/AppError';
 import TransactionRepository from '../repositories/TransactionsRepository';
 import Transaction, { transactionType } from '../models/Transaction';
 import Category from '../models/Category';
+import CategoryService from './CategoryService';
 
 interface TransactionRequest {
   title: string;
@@ -26,20 +27,8 @@ class CreateTransactionService {
       throw new AppError("The transaction value was can't be inserted");
     }
 
-    const categoryRepository = getRepository(Category);
-    let category = await categoryRepository.findOne({
-      where: { title: request.category },
-      select: ['id'],
-    });
-
-    // TODO: Move create category to new service
-    if (!category) {
-      const createCategory = categoryRepository.create({
-        title: request.category,
-      });
-      await categoryRepository.save(createCategory);
-      category = createCategory;
-    }
+    const categoryService = new CategoryService();
+    let category = await categoryService.GetOrCreateAsync(request.category);
 
     const transaction = repository.create({
       title: request.title,
