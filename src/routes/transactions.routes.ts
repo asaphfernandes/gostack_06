@@ -19,7 +19,7 @@ transactionsRouter.get('/c', async (request, response) => {
 
 transactionsRouter.get('/', async (request, response) => {
   const repository = getCustomRepository(TransactionsRepository);
-  const transactions = await repository.find({ relations: ['category'] });
+  const transactions = await repository.find();
   const balance = await repository.getBalance();
   return response.status(200).json({ transactions, balance });
 });
